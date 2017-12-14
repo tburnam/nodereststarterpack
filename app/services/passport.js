@@ -1,5 +1,4 @@
 // lets import some stuff
-import dotenv from 'dotenv';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
@@ -7,10 +6,9 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // and import User
 import User from '../models/user_model';
 
-dotenv.config({ silent: true });
-// options for local strategy, we'll use email AS the username
+// options for local strategy, we'll use username AS the username
 // not have separate ones
-const localOptions = { usernameField: 'email' };
+const localOptions = { usernameField: 'username' };
 
 // options for jwt strategy
 // we'll pass in the jwt in an `authorization` header
@@ -22,17 +20,17 @@ const jwtOptions = {
 
 
 // username + password authentication strategy
-const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
-  // Verify this email and password, call done with the user
+const localLogin = new LocalStrategy(localOptions, (username, password, done) => {
+  // Verify this username and password, call done with the user
   // if it is the correct email and password
   // otherwise, call done with false
-  User.findOne({ email }, (err, user) => {
+  User.findOne({ username }, (err, user) => {
     if (err) { return done(err); }
 
     if (!user) { return done(null, false); }
 
     // compare passwords - is `password` equal to user.password?
-    user.comparePassword(password, (err, isMatch) => {
+    return user.comparePassword(password, (err, isMatch) => {
       if (err) {
         done(err);
       } else if (!isMatch) {

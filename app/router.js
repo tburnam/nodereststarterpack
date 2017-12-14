@@ -1,15 +1,18 @@
 import { Router } from 'express';
-import dotenv from 'dotenv';
+
+import * as Users from './controllers/user_controller';
 import { requireAuth, requireSignin } from './services/passport';
 
-
 const router = Router();
-dotenv.config({ silent: true });
 
 router.get('/', (req, res) => {
-  const x = process.env.AUTH_SECRET;
-  res.json({ message: `welcome to my REST API starterkit (with user auth)!` });
+  res.send('API is online!');
 });
 
+router.post('/signin', requireSignin, Users.signin);
+router.post('/signup', Users.signup);
+router.get('/users', requireAuth, Users.getUser);
+router.route('/users/:id')
+  .put(requireAuth, Users.updateUser);
 
 export default router;
